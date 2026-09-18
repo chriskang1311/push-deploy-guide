@@ -653,23 +653,33 @@
     <div class="pixnum" data-digits="05"></div>
     <p class="eyebrow">Part three · in Claude Code <b>·</b> Step 5 of 13</p>
     <h2>Check Claude Code is<br>in the right folder</h2>
-    <p class="lead">Claude can only upload the project it is looking at. Ask it, in the chat:</p>
+    <p class="lead">Claude can only upload the project it is looking at. Ten seconds now, before you paste anything consequential. Ask it, in the chat:</p>
 
     <div class="cmd">
       <div class="cmd-bar">
         <span>Paste this into Claude Code</span>
         <button class="copy" type="button">Copy</button>
       </div>
-      <pre><code>Which folder are you working in right now? List what is in it.</code></pre>
+      <pre><code>Which folder are you working in right now?</code></pre>
     </div>
 
-    <p>You want to see <code>index.html</code>, <code>knowledge</code> and <code>package.json</code> in the answer. If you see something else, open your <code>personal-site</code> folder in Claude Code and ask again.</p>
+    <p>Claude answers with a path — something like <code>/Users/you/personal-site</code>. Read the end of it: it should be <code>personal-site</code>. That is the entire check.</p>
+
+    <p>If it names anything else — a folder above yours, a different project, or a second copy of the kit you are not working in — open your <code>personal-site</code> folder in Claude Code and ask again.</p>
+
+    <div class="note warn">
+      <span class="tag">If you have more than one copy</span>
+      <p>Read the whole path, not just the last word. Every copy of this project contains the same files, so a file list cannot tell them apart — only the path can. Make sure it is the copy you have actually been editing.</p>
+    </div>
 
     <p class="confirm">Confirm before continuing</p>
     <div class="checks">
       <div class="check">
         <input type="checkbox" id="s5a">
-        <div><label for="s5a">Claude named my folder, and <code>index.html</code>, <code>knowledge</code> and <code>package.json</code> are in it</label></div>
+        <div>
+          <label for="s5a">Claude answered with a path ending in <code>personal-site</code>, and it is the copy I have been working in</label>
+          <div class="why">Step 6 makes Claude confirm this again before it touches anything. This is the cheap version you can do yourself first.</div>
+        </div>
       </div>
     </div>
   </section>
