@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Done · Push & deploy</title>
+<style>
+  :root {
+    --red:        #A31F34;
+    --red-deep:   #7E1728;
+    --red-wash:   #FBF0F2;
+    --ink:        #2A2C2E;
+    --ink-soft:   #545759;
+    --ink-faint:  #8A8D90;
+    --paper:      #FCFCFB;
+    --surface:    #FFFFFF;
+    --rule:       #E2E2DF;
+    --rule-hard:  #C9C9C5;
+    --amber:      #8A5A1B;
+    --amber-wash: #FBF4E9;
+    --green:      #2C6046;
+    --green-wash: #EEF4F0;
+    --code-bg:    #24272A;
+    --code-ink:   #E9EBEC;
+
+    --sans: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    --mono: Consolas, "SF Mono", Menlo, "Courier New", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --red:        #E4657A;
+      --red-deep:   #C33B53;
+      --red-wash:   #2A171C;
+      --ink:        #E7E8E9;
+      --ink-soft:   #AFB2B4;
+      --ink-faint:  #7E8284;
+      --paper:      #16181A;
+      --surface:    #1D2022;
+      --rule:       #303436;
+      --rule-hard:  #414548;
+      --amber:      #D2A05F;
+      --amber-wash: #251D11;
+      --green:      #7FBD9C;
+      --green-wash: #14231B;
+      --code-bg:    #0E1011;
+      --code-ink:   #E2E5E6;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --red:        #E4657A;
+    --red-deep:   #C33B53;
+    --red-wash:   #2A171C;
+    --ink:        #E7E8E9;
+    --ink-soft:   #AFB2B4;
+    --ink-faint:  #7E8284;
+    --paper:      #16181A;
+    --surface:    #1D2022;
+    --rule:       #303436;
+    --rule-hard:  #414548;
+    --amber:      #D2A05F;
+    --amber-wash: #251D11;
+    --green:      #7FBD9C;
+    --green-wash: #14231B;
+    --code-bg:    #0E1011;
+    --code-ink:   #E2E5E6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink-soft);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============ rail + header ============ */
+
+  #rail {
+    position: fixed; top: 0; left: 0;
+    height: 2px; width: 0%;
+    background: var(--red); z-index: 40;
+    transition: width 0.25s ease;
+  }
+
+  header {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding-block: 0.7rem;
+  }
+
+  .bar {
+    max-width: 72rem; margin: 0 auto;
+    padding-inline: 20px;
+    display: flex; align-items: baseline; gap: 0.75rem;
+    font-family: var(--mono); font-size: 0.66rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .pill {
+    border: 1px solid var(--red); color: var(--red);
+    padding: 0.15rem 0.4rem; white-space: nowrap;
+  }
+
+  .bar .sep { color: var(--rule-hard); }
+  .bar .here { color: var(--ink); font-weight: 700; }
+  .bar .stage { color: var(--red); }
+  .bar .right { margin-left: auto; display: flex; gap: 0.75rem; white-space: nowrap; }
+  .bar .crumb { display: none; }
+  @media (min-width: 760px) { .bar .crumb { display: inline; } }
+
+  /* ============ shell ============ */
+
+  .shell {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 2.4rem 1rem;
+    display: grid;
+    gap: 2.8rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+  @media (min-width: 960px) {
+    .shell { grid-template-columns: 15rem 1fr; gap: 3.5rem; }
+  }
+
+  /* ============ sidebar ============ */
+
+  #side { min-width: 0; }
+
+  @media (min-width: 960px) {
+    #side {
+      position: sticky;
+      top: 4.2rem;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      border-right: 1px solid var(--rule);
+      padding-right: 1.4rem;
+    }
+  }
+
+  .side-toggle {
+    display: flex; width: 100%;
+    align-items: center; justify-content: space-between; gap: 1rem;
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink); background: var(--surface);
+    border: 1px solid var(--rule-hard);
+    padding: 0.75rem 0.9rem; cursor: pointer;
+  }
+  .side-toggle::after { content: "+"; color: var(--red); }
+  .side-toggle[aria-expanded="true"]::after { content: "\2212"; }
+  @media (min-width: 960px) { .side-toggle { display: none; } }
+
+  #sideList { display: none; }
+  #sideList.open { display: block; margin-top: 0.9rem; }
+  @media (min-width: 960px) { #sideList { display: block !important; margin-top: 0; } }
+
+  .grp {
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 1.15rem 0 0.45rem;
+    border-top: 1px solid var(--rule);
+    margin-top: 0.7rem;
+  }
+  .grp:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+
+  .navitem {
+    display: grid;
+    grid-template-columns: 2.1rem 1fr;
+    gap: 0.6rem;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    border-top: 1px solid var(--rule);
+    padding: 0.95rem 0;
+    font: inherit;
+    color: var(--ink-soft);
+    cursor: pointer;
+    align-items: start;
+  }
+  .navitem:last-child { border-bottom: 1px solid var(--rule); }
+
+  .navitem .num {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--ink-faint);
+    padding-top: 0.1rem;
+  }
+  .navitem .lab {
+    display: block;
+    font-size: 0.94rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--ink-soft);
+    text-wrap: balance;
+  }
+  .navitem .sub {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 0.62rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.3rem;
+  }
+  .navitem .track {
+    margin-top: 0.45rem;
+    height: 2px;
+    background: var(--rule);
+    position: relative;
+  }
+  .navitem .track i {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--red);
+    width: 0%;
+  }
+
+  .navitem:hover .lab { color: var(--red); }
+  .navitem.is-current .num { color: var(--red); }
+  .navitem.is-current .lab { color: var(--ink); }
+  .navitem.is-current .sub .of { color: var(--red); }
+  .navitem.is-done .num::before { content: "\2713 "; color: var(--green); }
+  .navitem.is-done .track i { background: var(--green); }
+  .navitem.is-locked { cursor: not-allowed; opacity: 0.45; }
+  .navitem.is-locked:hover .lab { color: var(--ink-soft); }
+  .navitem.is-locked .num::after { content: " \1F512"; font-size: 0.58rem; }
+
+  /* ============ type ============ */
+
+  main { min-width: 0; }
+
+  /* only the active step is in the document flow */
+  .screen { display: none; }
+  .screen.on { display: block; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 0 0 1.1rem;
+  }
+  .eyebrow b { color: var(--red); font-weight: 400; }
+
+  h1 {
+    font-weight: 900;
+    font-size: clamp(1.9rem, 5.6vw, 3rem);
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-wrap: balance;
+    margin: 0 0 1.1rem;
+  }
+
+  h2 {
+    font-weight: 900;
+    font-size: clamp(1.45rem, 4.2vw, 2rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-wrap: balance;
+    margin: 0 0 0.8rem;
+  }
+
+  h3 { font-weight: 700; font-size: 1rem; color: var(--ink); margin: 0 0 0.35rem; }
+
+  .lead { font-size: 1.05rem; max-width: 60ch; margin: 0 0 1.4rem; }
+  p { margin: 0 0 0.9rem; max-width: 64ch; }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--red); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  strong { color: var(--ink); }
+
+  code {
+    font-family: var(--mono); font-size: 0.87em;
+    background: var(--surface); border: 1px solid var(--rule);
+    padding: 0.08em 0.32em;
+  }
+
+  .ui {
+    font-family: var(--mono); font-size: 0.85em; font-weight: 700;
+    color: var(--ink); background: var(--red-wash);
+    border: 1px solid var(--rule-hard);
+    padding: 0.08em 0.34em; white-space: nowrap;
+  }
+
+  .meta {
+    font-family: var(--mono); font-size: 0.7rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--rule-hard);
+    padding-top: 0.8rem; margin: 1.6rem 0;
+  }
+
+  /* ============ pixel numeral ============ */
+
+  .pixnum { display: flex; gap: 0.45rem; margin: 0 0 1.2rem; }
+  .pixnum .glyph {
+    display: grid;
+    grid-template-columns: repeat(5, var(--px, 7px));
+    grid-auto-rows: var(--px, 7px);
+    gap: 1px;
+  }
+  .pixnum i { background: transparent; }
+  .pixnum i.on { background: var(--red); }
+
+  /* ============ buttons ============ */
+
+  .btn {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #FFFFFF; background: var(--red);
+    border: 1px solid var(--red);
+    padding: 0.7rem 1.3rem; cursor: pointer;
+  }
+  .btn:hover { background: var(--red-deep); border-color: var(--red-deep); }
+  .btn:disabled {
+    color: var(--ink-faint); background: transparent;
+    border-color: var(--rule-hard); cursor: not-allowed;
+  }
+  .btn.ghost { color: var(--ink-soft); background: transparent; border-color: var(--rule-hard); }
+  .btn.ghost:hover { color: var(--red); border-color: var(--red); background: transparent; }
+
+  .nav {
+    display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap;
+    margin-top: 2.4rem; padding-top: 1.3rem;
+    border-top: 1px solid var(--rule);
+  }
+  .nav .hint {
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.06em; color: var(--red);
+  }
+
+  /* ============ checklist ============ */
+
+  .confirm {
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--red);
+    margin: 2rem 0 0;
+  }
+
+  .checks { display: grid; gap: 0; margin: 0.7rem 0 0; }
+
+  .check {
+    display: grid; grid-template-columns: 1.6rem 1fr;
+    gap: 0.7rem; padding: 0.85rem 0;
+    border-top: 1px solid var(--rule); align-items: start;
+  }
+  .check:last-child { border-bottom: 1px solid var(--rule); }
+
+  .check input {
+    appearance: none; -webkit-appearance: none;
+    width: 1.05rem; height: 1.05rem; margin: 0.22rem 0 0;
+    border: 1.5px solid var(--rule-hard); background: var(--surface);
+    cursor: pointer; position: relative; flex: none;
+  }
+  .check input:checked { border-color: var(--red); background: var(--red); }
+  .check input:checked::after {
+    content: ""; position: absolute; left: 3px; top: 0px;
+    width: 0.32rem; height: 0.6rem;
+    border: solid #FFFFFF; border-width: 0 2px 2px 0;
+    transform: rotate(40deg);
+  }
+  .check label { color: var(--ink); cursor: pointer; display: block; }
+  .check .why { font-size: 0.9rem; color: var(--ink-soft); margin-top: 0.15rem; max-width: 62ch; }
+
+  /* ============ notes ============ */
+
+  .note {
+    margin: 1.2rem 0; padding: 0.9rem 1.1rem; font-size: 0.94rem;
+    border-left: 3px solid var(--rule-hard); background: var(--surface);
+  }
+  .note p { max-width: none; }
+  .note ul { margin: 0.45rem 0 0; padding-left: 1.15rem; }
+  .note li { margin-bottom: 0.28rem; }
+  .note li:last-child { margin-bottom: 0; }
+  .note .tag {
+    font-family: var(--mono); font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    display: block; margin-bottom: 0.35rem;
+  }
+  .note.stop { border-left-color: var(--red); background: var(--red-wash); }
+  .note.stop .tag { color: var(--red); }
+  .note.warn { border-left-color: var(--amber); background: var(--amber-wash); }
+  .note.warn .tag { color: var(--amber); }
+  .note.good { border-left-color: var(--green); background: var(--green-wash); }
+  .note.good .tag { color: var(--green); }
+
+  /* ============ tables ============ */
+
+  .tbl {
+    margin: 1.3rem 0; border: 1px solid var(--rule-hard);
+    background: var(--surface); overflow-x: auto;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 19rem; }
+  caption {
+    font-family: var(--mono); font-size: 0.66rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint); text-align: left;
+    padding: 0.7rem 1rem 0.55rem; border-bottom: 1px solid var(--rule);
+  }
+  th, td {
+    text-align: left; vertical-align: top; padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--rule); font-size: 0.92rem;
+  }
+  tr:last-child th, tr:last-child td { border-bottom: 0; }
+  th {
+    font-family: var(--mono); font-size: 0.79rem; font-weight: 700;
+    color: var(--ink); width: 1%; white-space: nowrap;
+  }
+  td { color: var(--ink-soft); }
+  .tbl.qa th { font-family: var(--sans); font-size: 0.92rem; font-weight: 400; color: var(--ink-soft); white-space: normal; width: auto; }
+  .tbl.qa td { font-family: var(--mono); font-size: 0.85rem; font-weight: 700; color: var(--ink); white-space: nowrap; }
+
+  /* ============ prompt blocks ============ */
+
+  .cmd { margin: 1.3rem 0; background: var(--code-bg); }
+  .cmd-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0.5rem 0.55rem 0.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.13);
+  }
+  .cmd-bar span {
+    font-family: var(--mono); font-size: 0.64rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase; color: #9AA0A4;
+  }
+  .cmd pre {
+    margin: 0; padding: 1rem; overflow-x: auto;
+    font-family: var(--mono); font-size: 0.775rem; line-height: 1.68;
+    color: var(--code-ink); white-space: pre;
+  }
+  .cmd pre code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; }
+  .copy {
+    font-family: var(--mono); font-size: 0.64rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--code-ink); background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.22);
+    padding: 0.32rem 0.55rem; cursor: pointer; flex: none;
+  }
+  .copy:hover { background: rgba(255,255,255,0.2); }
+  .copy[data-done="1"] { color: #9FE3BC; border-color: rgba(159,227,188,0.55); }
+
+  /* ============ figures ============ */
+
+  figure { margin: 1.3rem 0; display: grid; gap: 0.5rem; }
+  figure img {
+    display: block; width: 100%; max-width: 100%; height: auto;
+    border: 1px solid var(--rule-hard); background: var(--surface);
+  }
+  figcaption { font-size: 0.88rem; color: var(--ink-soft); max-width: 64ch; }
+  figcaption b {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--red);
+    margin-right: 0.45rem;
+  }
+
+  /* ============ roles ============ */
+
+  .roles { display: grid; gap: 0; margin: 1.3rem 0; }
+  .role { padding: 0.95rem 0; border-top: 1px solid var(--rule); }
+  .role:last-child { border-bottom: 1px solid var(--rule); }
+  .role .who {
+    font-family: var(--mono); font-size: 0.64rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    display: block; margin-bottom: 0.3rem;
+  }
+  .role.bot .who { color: var(--red); }
+  .role.you .who { color: var(--amber); }
+  .role p { font-size: 0.93rem; margin: 0 0 0.5rem; }
+  .role p:last-child { margin-bottom: 0; }
+
+  /* ============ details ============ */
+
+  details { margin: 1.4rem 0 0; border-top: 1px solid var(--rule-hard); padding-top: 0.85rem; }
+  summary {
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink); cursor: pointer; list-style: none;
+    display: flex; justify-content: space-between; gap: 1rem;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--red); font-weight: 700; }
+  details[open] summary::after { content: "\2212"; }
+  details dl { margin: 1rem 0 0; display: grid; gap: 0.95rem; }
+  details dt { font-weight: 700; color: var(--ink); font-size: 0.94rem; margin-bottom: 0.15rem; }
+  details dd { margin: 0; font-size: 0.92rem; max-width: 64ch; }
+
+  /* ============ recap ============ */
+
+  .recap { margin: 1.4rem 0 0; display: grid; gap: 0; }
+  .recap .row {
+    display: grid; grid-template-columns: 3.4rem 1fr; gap: 0.9rem;
+    padding: 0.8rem 0; border-top: 1px solid var(--rule); align-items: baseline;
+  }
+  .recap .row:last-child { border-bottom: 1px solid var(--rule); }
+  .recap .n { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: var(--red); }
+  .recap .t { color: var(--ink); font-weight: 700; font-size: 0.95rem; }
+  .recap .d { font-size: 0.9rem; margin-top: 0.1rem; }
+
+  /* ============ footer ============ */
+
+  footer {
+    max-width: 72rem; margin: 2rem auto 0;
+    padding-inline: 20px; padding-block: 1.8rem 3rem;
+    border-top: 1px solid var(--rule);
+  }
+  .foot-in {
+    display: flex; flex-wrap: wrap; gap: 0.7rem 1.6rem; align-items: baseline;
+    font-family: var(--mono); font-size: 0.68rem;
+    letter-spacing: 0.08em; color: var(--ink-faint);
+  }
+  .foot-in .by { color: var(--ink); }
+  .foot-in .course { color: var(--red); }
+  .foot-in .grow { margin-left: auto; }
+  footer button {
+    font: inherit; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint); background: none; border: 0; padding: 0;
+    cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  }
+  footer button:hover { color: var(--red); }
+
+  /* ============ focus + motion ============ */
+
+  :where(a, button, summary, input):focus-visible {
+    outline: 2px solid var(--red); outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* ============ print ============ */
+
+  @media print {
+    :root {
+      --paper: #FFFFFF; --surface: #FFFFFF; --ink: #000000;
+      --ink-soft: #2B2B2B; --ink-faint: #555555;
+      --rule: #CCCCCC; --rule-hard: #999999;
+      --red: #8E1B2E; --red-wash: #F6F6F6;
+      --amber-wash: #F6F6F6; --green-wash: #F6F6F6;
+      --code-bg: #F2F2F2; --code-ink: #000000;
+    }
+    body { font-size: 10.5pt; }
+    #rail, header, #side, .nav, .copy, footer button { display: none !important; }
+    .shell { display: block; max-width: none; padding: 0; }
+    .screen { display: block !important; break-before: page; }
+    .screen:first-of-type { break-before: auto; }
+    figure, .cmd, .tbl, .note, .check, details { break-inside: avoid; }
+    details summary::after { content: ""; }
+    details > *:not(summary) { display: block !important; }
+    a::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #555; }
+    .cmd-bar span { color: #555; }
+  }
+
+
+  /* ============ hub cards ============ */
+
+  .cards { display: grid; gap: 0; margin: 1.6rem 0 0; }
+
+  .card {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    gap: 0.4rem 1.1rem;
+    align-items: baseline;
+    border-top: 1px solid var(--rule);
+    padding: 1.15rem 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .card:last-child { border-bottom: 1px solid var(--rule); }
+  .card .cn {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.04em; color: var(--red);
+  }
+  .card .ct {
+    display: block;
+    font-weight: 900; font-size: 1.12rem; line-height: 1.12;
+    letter-spacing: -0.02em; text-transform: uppercase; color: var(--ink);
+  }
+  .card .cd { display: block; font-size: 0.93rem; margin-top: 0.3rem; max-width: 52ch; }
+  .card .cm {
+    font-family: var(--mono); font-size: 0.64rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); white-space: nowrap; text-align: right;
+  }
+  .card:hover .ct { color: var(--red); }
+  .card.is-done .cn::before { content: "\2713 "; color: var(--green); }
+  .card.is-locked { opacity: 0.45; pointer-events: none; }
+  .card.is-locked .cm::after { content: " \1F512"; }
+  @media (max-width: 620px) {
+    .card { grid-template-columns: 2.4rem 1fr; }
+    .card .cm { grid-column: 2; text-align: left; margin-top: 0.4rem; }
+  }
+
+  /* ============ lock panel ============ */
+
+  .lock {
+    border: 1px solid var(--red);
+    background: var(--red-wash);
+    padding: 1.6rem;
+    max-width: 44rem;
+  }
+  .lock .tag {
+    font-family: var(--mono); font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--red); display: block; margin-bottom: 0.6rem;
+  }
+  .lock h2 { margin-bottom: 0.7rem; }
+
+  .btn.is-off {
+    color: var(--ink-faint) !important;
+    background: transparent !important;
+    border-color: var(--rule-hard) !important;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body data-page="done.html">
+<div id="rail"></div>
+
+<header>
+  <div class="bar">
+    <span class="pill">Guide</span>
+    <span class="crumb sep">/</span>
+    <span class="crumb here">Push &amp; deploy</span>
+    <span class="sep">/</span>
+    <span class="stage" id="stage">Start</span>
+    <span class="right">
+      <span id="counter">Step 0 / 13</span>
+      <span id="pct">0%</span>
+    </span>
+  </div>
+</header>
+
+<div class="shell">
+
+  <aside id="side">
+    <button class="side-toggle" id="sideToggle" aria-expanded="false" aria-controls="sideList">
+      <span id="sideToggleLabel">The four parts</span>
+    </button>
+    <nav id="sideList" aria-label="The four parts"></nav>
+  </aside>
+
+  <main>
+  <section class="screen" data-stage="Done" data-nav="Done" data-group="Finish">
+    <p class="eyebrow">Complete</p>
+    <h2>Your site is<br>on the internet</h2>
+    <p class="lead">You made a repository, connected your GitHub account to Claude Code, pushed a real project, and put it on a server with a permanent address. From now on, anything you push deploys itself — ask Claude Code to make a change and upload it, and Vercel rebuilds your site within a minute.</p>
+
+    <div class="recap">
+      <div class="row"><div class="n">01—03</div><div><div class="t">The repository</div><div class="d">An empty, private home on GitHub — no README, no .gitignore, nothing to collide with your folder.</div></div></div>
+      <div class="row"><div class="n">04</div><div><div class="t">The connection</div><div class="d">Claude Code can now read your repositories and push to them, using a login you approved in your own browser.</div></div></div>
+      <div class="row"><div class="n">05—06</div><div><div class="t">The push</div><div class="d">Your project is on GitHub, backed up and versioned — with your API key deliberately left behind.</div></div></div>
+      <div class="row"><div class="n">07—13</div><div><div class="t">The deployment</div><div class="d">A public address anyone can open, a key held by Vercel rather than your code, and automatic rebuilds on every push.</div></div></div>
+    </div>
+
+    <p class="meta">If you get stuck later</p>
+    <p>Paste what you see into Claude Code and ask what it means. That is the normal way to use it, not a failure. If the chat dies on the live site, the answer is almost always the API key: check <span class="ui">Environment Variables</span>, then redeploy.</p>
+
+  </section>
+  </main>
+</div>
+
+<footer>
+  <div class="foot-in">
+    <span class="by">Created by Christopher Kang &mdash; MIT Sloan 2027</span>
+    <span class="course">15.S23 AI Builder Space</span>
+    <span class="grow">Progress is saved in this browser only &mdash; not your account.</span>
+    <button type="button" id="reset">Start over</button>
+  </div>
+</footer>
+
+<script>
+var PAGE_NAME = "done.html";
+
+(function () {
+  var KEY = "push-deploy-v3";
+  var TOTAL = 13;
+  var GATE0 = ["c1", "c2", "c3", "c4"];
+  var PARTS = [
+    { file: "part-1.html", name: "Create the repository", where: "On GitHub",
+      steps: [ {n:1,b:["s1a"]}, {n:2,b:["s2a","s2b","s2c"]}, {n:3,b:["s3a","s3b"]} ] },
+    { file: "part-2.html", name: "Connect Claude Code", where: "In Claude Code",
+      steps: [ {n:4,b:["s4a","s4b","s4c"]} ] },
+    { file: "part-3.html", name: "Push your code", where: "In Claude Code",
+      steps: [ {n:5,b:["s5a"]}, {n:6,b:["s6a","s6b","s6c"]} ] },
+    { file: "part-4.html", name: "Deploy to Vercel", where: "On Vercel",
+      steps: [ {n:7,b:["s7a","s7b"]}, {n:8,b:["s8a","s8b"]}, {n:9,b:["s9a","s9b"]},
+               {n:10,b:["s10a","s10b"]}, {n:11,b:["s11a","s11b"]}, {n:12,b:["s12a"]},
+               {n:13,b:["s13a","s13b","s13c"]} ] }
+  ];
+
+  function read() { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
+  var T = read().ticks || {};
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify({ ticks: T })); } catch (e) {} }
+
+  function on(id) { return !!T[id]; }
+  function allOn(ids) { return ids.every(on); }
+  function gate0() { return allOn(GATE0); }
+  function stepDone(st) { return allOn(st.b); }
+  function partDone(p) { return p.steps.every(stepDone); }
+  function unlocked(i) {
+    if (!gate0()) return false;
+    for (var k = 0; k < i; k++) { if (!partDone(PARTS[k])) return false; }
+    return true;
+  }
+  function allDone() { return PARTS.every(partDone); }
+  function doneSteps() {
+    var n = 0;
+    PARTS.forEach(function (p) { p.steps.forEach(function (s) { if (stepDone(s)) n++; }); });
+    return n;
+  }
+  function where() {
+    if (!gate0()) return { file: "index.html", label: "Before you begin" };
+    for (var i = 0; i < PARTS.length; i++) {
+      if (!partDone(PARTS[i])) return { file: PARTS[i].file, label: "Part " + (i + 1) + " · " + PARTS[i].name };
+    }
+    return { file: "done.html", label: "the finish" };
+  }
+
+  var ME = PAGE_NAME;
+  var IDX = PARTS.map(function (p) { return p.file; }).indexOf(ME);
+
+  /* ---------- sidebar ---------- */
+  var sideItems = [];
+  var sideList = document.getElementById("sideList");
+  var sideToggle = document.getElementById("sideToggle");
+  var sideLabel = document.getElementById("sideToggleLabel");
+
+  if (sideList) {
+    var head = document.createElement("div");
+    head.className = "grp";
+    head.textContent = "The four parts";
+    sideList.appendChild(head);
+
+    PARTS.forEach(function (p, n) {
+      var nums = p.steps.map(function (s) { return s.n; });
+      var range = nums.length > 1 ? nums[0] + "–" + nums[nums.length - 1] : "" + nums[0];
+      var a = document.createElement(ME === p.file ? "div" : "a");
+      a.className = "navitem";
+      if (a.tagName === "A") a.href = p.file;
+      var did = p.steps.filter(stepDone).length;
+      a.innerHTML =
+        '<span class="num">0' + (n + 1) + '</span>' +
+        '<span><span class="lab">' + p.name + '</span>' +
+        '<span class="sub"><span>' + p.where + '</span>' +
+        '<span>Step' + (nums.length > 1 ? "s" : "") + " " + range + '</span>' +
+        '<span class="of">' + did + " / " + p.steps.length + '</span></span>' +
+        '<span class="track"><i style="width:' + Math.round((did / p.steps.length) * 100) + '%"></i></span></span>';
+      if (ME === p.file) a.classList.add("is-current");
+      sideItems.push({ el: a, p: p, n: n });
+      sideList.appendChild(a);
+    });
+
+    sideToggle.addEventListener("click", function () {
+      var open = !sideList.classList.contains("open");
+      sideList.classList.toggle("open", open);
+      sideToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
+  /* ---------- header readout ---------- */
+  var counter = document.getElementById("counter");
+  var pctEl = document.getElementById("pct");
+  var stageEl = document.getElementById("stage");
+  var rail = document.getElementById("rail");
+
+  function refreshSide() {
+    sideItems.forEach(function (it) {
+      var did = it.p.steps.filter(stepDone).length;
+      var of = it.el.querySelector(".of");
+      var fill = it.el.querySelector(".track i");
+      if (of) of.textContent = did + " / " + it.p.steps.length;
+      if (fill) fill.style.width = Math.round((did / it.p.steps.length) * 100) + "%";
+      var open = unlocked(it.n);
+      it.el.classList.toggle("is-done", did === it.p.steps.length && ME !== it.p.file);
+      it.el.classList.toggle("is-locked", !open);
+      if (it.el.tagName === "A") {
+        if (open) it.el.setAttribute("href", it.p.file);
+        else it.el.removeAttribute("href");
+      }
+    });
+  }
+
+  function readout(stepNo, stageText) {
+    refreshSide();
+    var p = Math.round((doneSteps() / TOTAL) * 100);
+    if (counter) counter.textContent = stepNo ? "Step " + stepNo + " / " + TOTAL
+                                              : (ME === "done.html" ? "Complete" : "Step 0 / " + TOTAL);
+    if (pctEl) pctEl.textContent = p + "%";
+    if (rail) rail.style.width = p + "%";
+    if (stageEl && stageText) stageEl.textContent = stageText;
+    if (sideLabel) {
+      sideLabel.textContent = IDX >= 0
+        ? "Part " + (IDX + 1) + " of 4 · Step " + (stepNo || "?") + " of " + TOTAL
+        : "The four parts";
+    }
+  }
+
+  /* ---------- lock ---------- */
+  function lockOut(title, body) {
+    var main = document.querySelector("main");
+    var go = where();
+    main.innerHTML =
+      '<p class="eyebrow">Locked</p>' +
+      '<div class="lock"><span class="tag">Not yet</span><h2>' + title + "</h2><p>" + body + "</p>" +
+      '<p style="margin-top:1.1rem"><a class="btn" style="text-decoration:none;display:inline-block" href="' +
+      go.file + '">Go to ' + go.label + "</a></p></div>";
+    readout(null, "Locked");
+  }
+
+  if (IDX >= 0 && !unlocked(IDX)) {
+    lockOut(
+      "Part " + (IDX + 1) + " is not open yet",
+      "Every box in the parts before this one has to be ticked first. That is deliberate — each part depends on the one before it, and skipping ahead is how people end up stuck with a half-built site."
+    );
+    return;
+  }
+  if (ME === "done.html" && !allDone()) {
+    lockOut("You are not finished yet",
+      "Tick every box in all four parts and this page will open on its own.");
+    return;
+  }
+
+  /* ---------- checkbox wiring ---------- */
+  document.querySelectorAll('input[type="checkbox"]').forEach(function (b) {
+    if (b.id in T) b.checked = !!T[b.id];
+    b.addEventListener("change", function () {
+      T[b.id] = b.checked;
+      persist();
+      sync();
+    });
+  });
+
+  /* ---------- index page ---------- */
+  if (ME === "index.html") {
+    var startBtn = document.getElementById("startBtn");
+    var startHint = document.getElementById("startHint");
+    var cards = Array.prototype.slice.call(document.querySelectorAll(".card"));
+
+    window.sync = function () {
+      var left = GATE0.filter(function (id) { return !on(id); }).length;
+      if (startBtn) {
+        startBtn.disabled = left > 0;
+        startHint.textContent = left === 0 ? "" :
+          "Tick the " + left + " remaining box" + (left > 1 ? "es" : "") + " to start.";
+      }
+      cards.forEach(function (c, n) {
+        var p = PARTS[n];
+        if (!p) return;
+        c.classList.toggle("is-done", partDone(p));
+        c.classList.toggle("is-locked", !unlocked(n));
+        if (unlocked(n)) c.setAttribute("href", p.file); else c.removeAttribute("href");
+      });
+      // refresh sidebar counts cheaply
+      readout(null, gate0() ? "Ready" : "Before you begin");
+    };
+    if (startBtn) startBtn.addEventListener("click", function () { location.href = "part-1.html"; });
+    sync();
+    return;
+  }
+
+  /* ---------- done page ---------- */
+  if (ME === "done.html") {
+    window.sync = function () { readout(null, "Done"); };
+    sync();
+    return;
+  }
+
+  /* ---------- part pages: one step at a time ---------- */
+  var part = PARTS[IDX];
+  var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
+  var at = 0;
+
+  screens.forEach(function (s, i) {
+    var nav = document.createElement("div");
+    nav.className = "nav";
+
+    var back = document.createElement("a");
+    back.className = "btn ghost";
+    back.style.textDecoration = "none";
+    back.textContent = "Back";
+    if (i > 0) {
+      back.href = "#";
+      back.addEventListener("click", function (e) { e.preventDefault(); show(i - 1); });
+    } else {
+      back.href = IDX === 0 ? "index.html" : PARTS[IDX - 1].file;
+    }
+    nav.appendChild(back);
+
+    var next = document.createElement("a");
+    next.className = "btn";
+    next.style.textDecoration = "none";
+    var lastOfPart = i === screens.length - 1;
+    next.textContent = lastOfPart ? (IDX === PARTS.length - 1 ? "Finish" : "Next part") : "Next";
+    if (lastOfPart) {
+      next.href = IDX === PARTS.length - 1 ? "done.html" : PARTS[IDX + 1].file;
+    } else {
+      next.href = "#";
+      next.addEventListener("click", function (e) { e.preventDefault(); show(i + 1); });
+    }
+    nav.appendChild(next);
+
+    var hint = document.createElement("span");
+    hint.className = "hint";
+    nav.appendChild(hint);
+
+    s.appendChild(nav);
+    s._next = next;
+    s._hint = hint;
+  });
+
+  function boxesOf(i) {
+    return Array.prototype.slice.call(screens[i].querySelectorAll('input[type="checkbox"]'));
+  }
+
+  window.sync = function () {
+    screens.forEach(function (s, i) {
+      var left = boxesOf(i).filter(function (b) { return !b.checked; }).length;
+      var blocked = left > 0;
+      s._next.classList.toggle("is-off", blocked);
+      s._next.setAttribute("aria-disabled", blocked ? "true" : "false");
+      s._hint.textContent = blocked
+        ? "Tick the " + left + " remaining box" + (left > 1 ? "es" : "") + " to continue."
+        : "";
+    });
+    readout(part.steps[at].n, "Part " + (IDX + 1) + " · " + part.name);
+  };
+
+  function show(i) {
+    // never move forward past an unfinished step
+    for (var k = 0; k < i; k++) {
+      if (boxesOf(k).filter(function (b) { return !b.checked; }).length) { i = k; break; }
+    }
+    at = Math.max(0, Math.min(screens.length - 1, i));
+    screens.forEach(function (s, n) { s.classList.toggle("on", n === at); });
+    window.scrollTo(0, 0);
+    sync();
+  }
+
+  // block the forward link while boxes are unticked
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a.btn.is-off") : null;
+    if (a) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  // open on the first unfinished step of this part
+  var start = 0;
+  for (var i = 0; i < part.steps.length; i++) {
+    if (!stepDone(part.steps[i])) { start = i; break; }
+    start = i;
+  }
+  show(start);
+})();
+
+document.getElementById("reset").addEventListener("click", function () {
+  try { localStorage.removeItem("push-deploy-v3"); } catch (e) {}
+  location.href = "index.html";
+});
+</script>
+</body>
+</html>
