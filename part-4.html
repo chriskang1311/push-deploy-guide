@@ -770,7 +770,8 @@
 
     <div class="note warn">
       <span class="tag">Why it fails</span>
-      <p>Your API key was never uploaded to GitHub. Your <code>.gitignore</code> kept <code>.env.local</code> out on purpose — it is the same file you confirmed was missing from the upload in step 6. Vercel built your site from GitHub, so it has your code but not your key, and without the key it cannot reach Parley.</p>
+      <p>The same chat answered you on your laptop, before you started this guide. Nothing about your code has changed since. What changed is <em>where it is running</em>.</p>
+      <p>Your API key was never uploaded to GitHub. Your <code>.gitignore</code> kept <code>.env.local</code> out on purpose — it is the same file you confirmed was missing from the upload in step 6. On your laptop the site reads your key straight out of that file. Vercel built your site from GitHub, so it has every one of your files except that one, and without the key it cannot reach Parley.</p>
       <p>Keys never belong in a repository, whether it is private or public. You give them to the host instead, which is exactly what you are about to do.</p>
     </div>
 

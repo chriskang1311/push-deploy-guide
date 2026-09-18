@@ -684,10 +684,11 @@
       <div class="check">
         <input type="checkbox" id="c1">
         <div>
-          <label for="c1">My page opens on my laptop, and it is mine</label>
-          <div class="why">Find <code>index.html</code> in your <code>personal-site</code> folder and double-click it. It opens in your browser and you see your own page. No terminal needed.
-          <br><br><strong>The chat button will not answer yet.</strong> That is expected, not a fault — the chat needs a server, and a file opened straight from your folder is not one. Part four is what gives you that server.
-          <br><br>Want a fuller check? Ask Claude Code: <em>"Please run my site locally and tell me whether it works, then stop it again."</em></div>
+          <label for="c1">My site runs on my laptop and the chat answers me</label>
+          <div class="why">You do not need to type a command for this. Ask Claude Code:
+          <em>"Please run my personal-site locally, tell me the address to open, and tell me whether it found my API key. Leave it running until I say I'm done."</em>
+          <br><br>It will report something like <code>Ask my site: http://localhost:3000 (key found)</code>. Open that address, then ask the chat a question about yourself — <strong>it should answer.</strong> It works here because your key sits in <code>.env.local</code> on your laptop.
+          <br><br>If it says <code>no key found</code>, your key is not in <code>.env.local</code> yet. Sort that out before going any further — and remember what the chat does right now, because it is going to behave differently once the site is live.</div>
         </div>
       </div>
       <div class="check">
