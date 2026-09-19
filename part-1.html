@@ -728,8 +728,8 @@
   <section class="screen" data-stage="Part 1 · Repository" data-step="3" data-nav="Create it" data-group="Part 1 · Create the repository">
     <div class="pixnum" data-digits="03"></div>
     <p class="eyebrow">Part one · in your browser <b>·</b> Step 3 of 13</p>
-    <h2>Click create<br>repository</h2>
-    <p class="lead">The green <span class="ui">Create repository</span> button is at the bottom of the form. There is no confirmation step — the repository exists as soon as you click.</p>
+    <h2>What appears next<br>is not an error</h2>
+    <p class="lead">Click the green <span class="ui">Create repository</span> button at the bottom of the form. There is no "are you sure" — the repository exists the moment you click. Then read what GitHub shows you, because it alarms almost everyone the first time.</p>
 
     <div class="note good">
       <span class="tag">You should now see</span>
@@ -739,13 +739,14 @@
       </ul>
     </div>
 
-    <p>That page of commands is <strong>not</strong> an error and you do not need to run anything on it. It appears because the repository is still empty, which is exactly what you wanted. Leave the tab open.</p>
+    <p>That wall of commands is <strong>not</strong> an error, and you do not need to run any of it. GitHub shows it because your repository is empty — which is exactly what you wanted, and what the last three settings in step 2 were protecting. Claude Code will do all of that for you in part three.</p>
+    <p>Leave the tab open and carry on.</p>
 
     <details>
       <summary>If part one went wrong</summary>
       <dl>
         <div><dt>The repository name is already taken</dt><dd>You already have one called <code>personal-site</code>. Either open that one and use it, or name this <code>personal-site-2</code> and remember which you chose.</dd></div>
-        <div><dt>I ticked one of the three boxes</dt><dd>Start over: <span class="ui">Settings</span> → <span class="ui">General</span> → scroll to the very bottom → delete the repository, then redo step 2. It is empty, so nothing is lost.</dd></div>
+        <div><dt>I turned on the README, a .gitignore or a license</dt><dd>Start over: <span class="ui">Settings</span> → <span class="ui">General</span> → scroll to the very bottom → delete the repository, then redo step 2. It is empty, so nothing is lost.</dd></div>
         <div><dt>I chose Public by mistake</dt><dd>Fix it now, before any files go up: <span class="ui">Settings</span> → <span class="ui">General</span> → bottom → <span class="ui">Change visibility</span>.</dd></div>
         <div><dt>The Owner dropdown shows a class or organisation</dt><dd>Set it back to your own username unless your instructor told you otherwise.</dd></div>
       </dl>
@@ -759,7 +760,10 @@
       </div>
       <div class="check">
         <input type="checkbox" id="s3b">
-        <div><label for="s3b">There is a <span class="ui">Private</span> label next to its name</label></div>
+        <div>
+          <label for="s3b">There is a <span class="ui">Private</span> label next to its name</label>
+          <div class="why">In step 2 you set the dropdown to Private. This is different: it confirms the repository GitHub actually made is private. Settings and outcomes are not always the same thing, and this is the one worth checking twice.</div>
+        </div>
       </div>
     </div>
   </section>
