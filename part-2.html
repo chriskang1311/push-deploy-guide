@@ -718,21 +718,46 @@ Never ask me to paste a password or a token into this chat.</code></pre>
       </div>
     </div>
 
+    <p class="meta">What the terminal shows you, in order</p>
+
+    <p>Two things appear, and both need an answer from you. Nothing else in this step does.</p>
+
+    <div class="tbl">
+      <table>
+        <caption>Do exactly this</caption>
+        <tbody>
+          <tr>
+            <th>Authenticate Git with your<br>GitHub credentials?</th>
+            <td>Type <strong><code>Y</code></strong> and press Return. This is what lets you upload files later without being asked to sign in every time.</td>
+          </tr>
+          <tr>
+            <th>! First copy your one-time code:<br>ABCD-1234</th>
+            <td>The code is <strong>already copied</strong> for you. Just press Return — your browser opens GitHub on its own. Yours will be a different code.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Then, in the browser: paste the code (<code>Cmd</code>+<code>V</code>), click the green <span class="ui">Authorize</span> button, and go back to Claude Code and tell it you have finished.</p>
+
+    <div class="note good">
+      <span class="tag">You will know it worked</span>
+      <p>The terminal prints a line ending <code>✓ Logged in as</code> followed by your GitHub username.</p>
+    </div>
+
     <details>
-      <summary>If it asks you questions instead</summary>
+      <summary>If it asks you three other questions first</summary>
+      <p style="font-size:0.92rem">The command answers these for you, so you should not see them. If you do, the command was probably mistyped — but these answers are correct either way. Move between options with the up and down arrow keys, confirm with Return.</p>
       <div class="tbl qa">
         <table>
           <caption>Answer with</caption>
           <tbody>
             <tr><th>Where do you use GitHub?</th><td>GitHub.com</td></tr>
             <tr><th>Preferred protocol for Git operations?</th><td>HTTPS</td></tr>
-            <tr><th>Authenticate Git with your GitHub credentials?</th><td>Y</td></tr>
             <tr><th>How would you like to authenticate?</th><td>Login with a web browser</td></tr>
-            <tr><th>First copy your one-time code…</th><td>Copy it, then press Return</td></tr>
           </tbody>
         </table>
       </div>
-      <p style="font-size:0.9rem;margin-top:0.8rem">Move between options with the up and down arrow keys, confirm with Return. The command answers most of these for you, so you will usually only see the last one.</p>
     </details>
 
     <details>
