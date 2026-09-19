@@ -669,26 +669,36 @@
     <div class="pixnum" data-digits="02"></div>
     <p class="eyebrow">Part one · in your browser <b>·</b> Step 2 of 13</p>
     <h2>Fill in the form</h2>
-    <p class="lead">Set these seven things. Ignore anything on the page that is not listed here.</p>
+    <p class="lead">The form comes in two numbered sections. Set these eight things and ignore anything not listed here.</p>
 
     <div class="tbl">
       <table>
-        <caption>Create a new repository</caption>
+        <caption>1 &nbsp; General</caption>
         <tbody>
           <tr><th>Owner</th><td>Leave it as your own username.</td></tr>
-          <tr><th>Repository name</th><td>Type <strong><code>personal-site</code></strong> — the same name as your folder.</td></tr>
-          <tr><th>Description</th><td>Skip it, or one line: <em>My personal site with Ask my site.</em></td></tr>
-          <tr><th>Public / Private</th><td>Choose <strong>Private</strong>.</td></tr>
-          <tr><th>Add a README</th><td><strong>Leave unticked.</strong></td></tr>
-          <tr><th>Add .gitignore</th><td><strong>Leave unticked.</strong></td></tr>
-          <tr><th>Choose a license</th><td>Leave as <span class="ui">None</span>.</td></tr>
+          <tr><th>Repository name</th><td>Type <strong><code>personal-site</code></strong> — the same name as your folder. A green tick reading <em>personal-site is available</em> means the name is free. Ignore the invented name GitHub suggests underneath.</td></tr>
+          <tr><th>Description</th><td>Leave it empty, or write one line: <em>My personal site with Ask my site.</em></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tbl">
+      <table>
+        <caption>2 &nbsp; Configuration</caption>
+        <tbody>
+          <tr><th>Choose visibility</th><td>Open the dropdown and pick <strong>Private</strong>.</td></tr>
+          <tr><th>Start with a template</th><td>Leave as <span class="ui">No template</span>.</td></tr>
+          <tr><th>Add README</th><td>Leave the switch <strong>Off</strong>.</td></tr>
+          <tr><th>Add .gitignore</th><td>Leave as <span class="ui">No .gitignore</span>.</td></tr>
+          <tr><th>Add license</th><td>Leave as <span class="ui">No license</span>.</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="note stop">
-      <span class="tag">Leave those three boxes alone</span>
-      <p>Your <code>personal-site</code> folder already has its own <code>README.md</code> and <code>.gitignore</code>. If GitHub makes its own copies now, the two sets collide and your upload in part three will be rejected. You want this repository completely empty.</p>
+      <span class="tag">The last three are the ones that matter</span>
+      <p>Those three settings are the only ones that put files into your new repository, and you want none of them. Your <code>personal-site</code> folder already has its own <code>README.md</code> and <code>.gitignore</code>; if GitHub makes its own copies now, the two sets collide and your upload in part three will be rejected.</p>
+      <p>So: <span class="ui">Add README</span> shows <strong>Off</strong>, and the two dropdowns below it still read <span class="ui">No .gitignore</span> and <span class="ui">No license</span>. They are correct when you arrive — the mistake is turning them on, not leaving them.</p>
     </div>
 
     <div class="note warn">
@@ -700,17 +710,17 @@
     <div class="checks">
       <div class="check">
         <input type="checkbox" id="s2a">
-        <div><label for="s2a">The name is <code>personal-site</code> and the owner is my own username</label></div>
+        <div><label for="s2a">The name is <code>personal-site</code>, it says the name is available, and the owner is my own username</label></div>
       </div>
       <div class="check">
         <input type="checkbox" id="s2b">
-        <div><label for="s2b">Visibility is set to <strong>Private</strong></label></div>
+        <div><label for="s2b"><span class="ui">Choose visibility</span> says <strong>Private</strong></label></div>
       </div>
       <div class="check">
         <input type="checkbox" id="s2c">
         <div>
-          <label for="s2c">All three <span class="ui">Initialize</span> boxes are <strong>unticked</strong></label>
-          <div class="why">README, .gitignore, and license. Look again before you tick this one — it is the mistake that breaks part three.</div>
+          <label for="s2c"><span class="ui">Add README</span> is <strong>Off</strong>, and the dropdowns read <span class="ui">No .gitignore</span> and <span class="ui">No license</span></label>
+          <div class="why">Look again before you tick this one — it is the mistake that breaks part three.</div>
         </div>
       </div>
     </div>
