@@ -676,39 +676,29 @@
 
   <section class="screen on" data-stage="Before you begin" data-nav="Before you begin" data-group="Start">
     <p class="eyebrow">Before you begin</p>
-    <h2>Four things to check<br>before we start</h2>
+    <h2>Three things to check<br>before we start</h2>
     <p class="lead">Thirty seconds now saves ten minutes later. Tick what is true — the page remembers. If you are still stuck here when the room moves on, raise your hand rather than starting over.</p>
 
-    <p class="confirm">Tick all four to continue</p>
+    <p class="confirm">Tick all three to continue</p>
     <div class="checks">
       <div class="check">
         <input type="checkbox" id="c1">
         <div>
-          <label for="c1">My site runs on my laptop and the chat answers me</label>
-          <div class="why">You do not need to type a command for this. Ask Claude Code:
-          <em>"Please run my personal-site locally, tell me the address to open, and tell me whether it found my API key. Leave it running until I say I'm done."</em>
-          <br><br>It will report something like <code>Ask my site: http://localhost:3000 (key found)</code>. Open that address, then ask the chat a question about yourself — <strong>it should answer.</strong> It works here because your key sits in <code>.env.local</code> on your laptop.
-          <br><br>If it says <code>no key found</code>, your key is not in <code>.env.local</code> yet. Sort that out before going any further — and remember what the chat does right now, because it is going to behave differently once the site is live.</div>
+          <label for="c1">My <code>knowledge/</code> folder is mine</label>
+          <div class="why">It describes you, not the sample student. Anything in there is what the chat will say about you once the site is public.</div>
         </div>
       </div>
       <div class="check">
         <input type="checkbox" id="c2">
         <div>
-          <label for="c2">My <code>knowledge/</code> folder is mine</label>
-          <div class="why">It describes you, not the sample student. Anything in there is what the chat will say about you once the site is public.</div>
+          <label for="c2">I am signed in to GitHub</label>
+          <div class="why">Open <a href="https://github.com" target="_blank" rel="noopener">github.com</a> — you should see your avatar in the top-right, not a <span class="ui">Sign up</span> button. If you have no account, make one now.</div>
         </div>
       </div>
       <div class="check">
         <input type="checkbox" id="c3">
         <div>
-          <label for="c3">I am signed in to GitHub</label>
-          <div class="why">Open <a href="https://github.com" target="_blank" rel="noopener">github.com</a> — you should see your avatar in the top-right, not a <span class="ui">Sign up</span> button. If you have no account, make one now.</div>
-        </div>
-      </div>
-      <div class="check">
-        <input type="checkbox" id="c4">
-        <div>
-          <label for="c4">Claude Code is open on my <code>personal-site</code> folder</label>
+          <label for="c3">Claude Code is open on my <code>personal-site</code> folder</label>
           <div class="why">Not a different project, and not a fresh empty window. Parts two and three happen inside it.</div>
         </div>
       </div>
@@ -752,9 +742,9 @@
 var PAGE_NAME = "index.html";
 
 (function () {
-  var KEY = "push-deploy-v3";
+  var KEY = "push-deploy-v4";
   var TOTAL = 13;
-  var GATE0 = ["c1", "c2", "c3", "c4"];
+  var GATE0 = ["c1", "c2", "c3"];
   var PARTS = [
     { file: "part-1.html", name: "Create the repository", where: "On GitHub",
       steps: [ {n:1,b:["s1a"]}, {n:2,b:["s2a","s2b","s2c"]}, {n:3,b:["s3a","s3b"]} ] },
@@ -1032,7 +1022,7 @@ var PAGE_NAME = "index.html";
 })();
 
 document.getElementById("reset").addEventListener("click", function () {
-  try { localStorage.removeItem("push-deploy-v3"); } catch (e) {}
+  try { localStorage.removeItem("push-deploy-v4"); } catch (e) {}
   location.href = "index.html";
 });
 </script>

@@ -914,9 +914,9 @@
 var PAGE_NAME = "part-4.html";
 
 (function () {
-  var KEY = "push-deploy-v3";
+  var KEY = "push-deploy-v4";
   var TOTAL = 13;
-  var GATE0 = ["c1", "c2", "c3", "c4"];
+  var GATE0 = ["c1", "c2", "c3"];
   var PARTS = [
     { file: "part-1.html", name: "Create the repository", where: "On GitHub",
       steps: [ {n:1,b:["s1a"]}, {n:2,b:["s2a","s2b","s2c"]}, {n:3,b:["s3a","s3b"]} ] },
@@ -1194,7 +1194,7 @@ var PAGE_NAME = "part-4.html";
 })();
 
 document.getElementById("reset").addEventListener("click", function () {
-  try { localStorage.removeItem("push-deploy-v3"); } catch (e) {}
+  try { localStorage.removeItem("push-deploy-v4"); } catch (e) {}
   location.href = "index.html";
 });
 </script>
