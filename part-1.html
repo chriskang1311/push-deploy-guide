@@ -706,7 +706,11 @@
       <p>Your <code>knowledge/</code> folder holds your profile, your FAQ, and the list of things you have decided not to discuss. Your site is built to keep that folder off the public web on purpose. A public repository would undo that and let anyone read it.</p>
     </div>
 
-    <p class="confirm">Confirm all three before continuing</p>
+    <p class="meta">Then create it</p>
+
+    <p>Read those last three settings once more, then click the green <span class="ui">Create repository</span> button at the bottom right of the form. There is no "are you sure" — the repository exists the moment you click.</p>
+
+    <p class="confirm">Confirm all four before continuing</p>
     <div class="checks">
       <div class="check">
         <input type="checkbox" id="s2a">
@@ -723,24 +727,35 @@
           <div class="why">Look again before you tick this one — it is the mistake that breaks part three.</div>
         </div>
       </div>
+      <div class="check">
+        <input type="checkbox" id="s2d">
+        <div><label for="s2d">I clicked <span class="ui">Create repository</span></label></div>
+      </div>
     </div>
   </section>
   <section class="screen" data-stage="Part 1 · Repository" data-step="3" data-nav="Create it" data-group="Part 1 · Create the repository">
     <div class="pixnum" data-digits="03"></div>
     <p class="eyebrow">Part one · in your browser <b>·</b> Step 3 of 13</p>
-    <h2>What appears next<br>is not an error</h2>
-    <p class="lead">Click the green <span class="ui">Create repository</span> button at the bottom of the form. There is no "are you sure" — the repository exists the moment you click. Then read what GitHub shows you, because it alarms almost everyone the first time.</p>
+    <h2>Where you are now,<br>and what you see</h2>
+    <p class="lead">GitHub has taken you to your new repository. Check you are in the right place, then read the screen — because it alarms almost everyone the first time.</p>
 
-    <div class="note good">
-      <span class="tag">You should now see</span>
-      <ul>
-        <li>A page headed <span class="ui">Quick setup</span>, with a list of Git commands on it.</li>
-        <li>Your repository's name at the top, with a <span class="ui">Private</span> label beside it.</li>
-      </ul>
+    <div class="tbl">
+      <table>
+        <caption>The page you should be on</caption>
+        <tbody>
+          <tr><th>Address</th><td><code>github.com/<em>your-username</em>/personal-site</code></td></tr>
+          <tr><th>At the top</th><td>Your repository name, with a <span class="ui">Private</span> label beside it.</td></tr>
+          <tr><th>Headline</th><td><span class="ui">Quick setup — if you’ve done this kind of thing before</span></td></tr>
+          <tr><th>Below that</th><td>A box holding a web address ending in <code>.git</code>, and several blocks of commands beginning <code>git init</code> and <code>git remote add origin</code>.</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <p>That wall of commands is <strong>not</strong> an error, and you do not need to run any of it. GitHub shows it because your repository is empty — which is exactly what you wanted, and what the last three settings in step 2 were protecting. Claude Code will do all of that for you in part three.</p>
-    <p>Leave the tab open and carry on.</p>
+    <div class="note good">
+      <span class="tag">That wall of commands is not an error</span>
+      <p>You do not need to run any of it, and you must not try. GitHub shows those commands because your repository is empty — which is exactly what you wanted, and exactly what the last three settings in step 2 were protecting.</p>
+      <p>Claude Code runs every one of them for you in part three. <strong>Leave this tab open</strong> and carry on.</p>
+    </div>
 
     <details>
       <summary>If part one went wrong</summary>
@@ -788,7 +803,7 @@ var PAGE_NAME = "part-1.html";
   var GATE0 = ["c1", "c2", "c3"];
   var PARTS = [
     { file: "part-1.html", name: "Create the repository", where: "On GitHub",
-      steps: [ {n:1,b:["s1a"]}, {n:2,b:["s2a","s2b","s2c"]}, {n:3,b:["s3a","s3b"]} ] },
+      steps: [ {n:1,b:["s1a"]}, {n:2,b:["s2a","s2b","s2c","s2d"]}, {n:3,b:["s3a","s3b"]} ] },
     { file: "part-2.html", name: "Connect Claude Code", where: "In Claude Code",
       steps: [ {n:4,b:["s4a","s4b","s4c"]} ] },
     { file: "part-3.html", name: "Push your code", where: "In Claude Code",
