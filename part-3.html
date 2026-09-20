@@ -914,6 +914,44 @@ var PAGE_NAME = "part-3.html";
     readout(null, "Locked");
   }
 
+
+  /* ---------- copy buttons ---------- */
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    var wrap = btn.closest(".cmd");
+    if (!wrap) return;
+    var block = wrap.querySelector("code");
+    if (!block) return;
+
+    function flash(msg) {
+      btn.textContent = msg;
+      btn.dataset.done = "1";
+      setTimeout(function () { btn.textContent = "Copy"; delete btn.dataset.done; }, 2000);
+    }
+    function selectIt() {
+      var r = document.createRange();
+      r.selectNodeContents(block);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+    }
+    function legacy() {
+      selectIt();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      if (ok) { window.getSelection().removeAllRanges(); flash("Copied"); }
+      else { flash("Now press Cmd+C"); }
+    }
+
+    btn.addEventListener("click", function () {
+      var text = block.innerText || block.textContent || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash("Copied"); }, legacy);
+      } else {
+        legacy();
+      }
+    });
+  });
+
   if (IDX >= 0 && !unlocked(IDX)) {
     lockOut(
       "Part " + (IDX + 1) + " is not open yet",

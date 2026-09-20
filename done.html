@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Done · Push & deploy</title>
+<title>Congratulations · Push & deploy</title>
 <style>
   :root {
     --red:        #A31F34;
@@ -649,21 +649,30 @@
   </aside>
 
   <main>
-  <section class="screen" data-stage="Done" data-nav="Done" data-group="Finish">
-    <p class="eyebrow">Complete</p>
-    <h2>Your site is<br>on the internet</h2>
-    <p class="lead">You made a repository, connected your GitHub account to Claude Code, pushed a real project, and put it on a server with a permanent address. From now on, anything you push deploys itself — ask Claude Code to make a change and upload it, and Vercel rebuilds your site within a minute.</p>
+  <section class="screen on" data-stage="Done" data-nav="Done" data-group="Finish">
+    <p class="eyebrow">All thirteen steps complete</p>
+    <h2>Congratulations —<br>your site is live</h2>
+    <p class="lead">It has a real web address, it runs whether or not your laptop is on, and anyone you send the link to can open it.</p>
 
     <div class="recap">
-      <div class="row"><div class="n">01—03</div><div><div class="t">The repository</div><div class="d">An empty, private home on GitHub — no README, no .gitignore, nothing to collide with your folder.</div></div></div>
-      <div class="row"><div class="n">04</div><div><div class="t">The connection</div><div class="d">Claude Code can now read your repositories and push to them, using a login you approved in your own browser.</div></div></div>
-      <div class="row"><div class="n">05—06</div><div><div class="t">The push</div><div class="d">Your project is on GitHub, backed up and versioned — with your API key deliberately left behind.</div></div></div>
-      <div class="row"><div class="n">07—13</div><div><div class="t">The deployment</div><div class="d">A public address anyone can open, a key held by Vercel rather than your code, and automatic rebuilds on every push.</div></div></div>
+      <div class="row"><div class="n">01</div><div><div class="t">Your code has a home</div><div class="d">A private repository on GitHub, backed up and keeping a copy of every change you make from now on.</div></div></div>
+      <div class="row"><div class="n">02</div><div><div class="t">Claude Code can reach it</div><div class="d">Ask it to change something and upload it, in plain English. You never have to type a Git command.</div></div></div>
+      <div class="row"><div class="n">03</div><div><div class="t">Your site has an address</div><div class="d">Vercel serves it to the public, and rebuilds it automatically every time you push a change.</div></div></div>
+      <div class="row"><div class="n">04</div><div><div class="t">Your key stayed yours</div><div class="d">The API key never went near GitHub. Vercel holds it privately, which is why the chat answers on the live site.</div></div></div>
     </div>
 
-    <p class="meta">If you get stuck later</p>
-    <p>Paste what you see into Claude Code and ask what it means. That is the normal way to use it, not a failure. If the chat dies on the live site, the answer is almost always the API key: check <span class="ui">Environment Variables</span>, then redeploy.</p>
+    <p class="meta">What to do next</p>
+    <p>Send the link to someone. Then ask Claude Code for a change — a new project, a better answer, a fixed typo — and watch it appear on the live site a minute later. That loop is the thing you actually built today.</p>
 
+    <div class="note good">
+      <span class="tag">If it ever breaks</span>
+      <p>Paste what you see into Claude Code and ask what it means. If the chat stops answering on the live site, it is almost always the API key: check <span class="ui">Environment Variables</span> on Vercel, then redeploy.</p>
+    </div>
+
+    <div class="nav">
+      <a class="btn ghost" style="text-decoration:none" href="part-4.html">Back</a>
+      <button class="btn ghost" onclick="window.print()">Print the guide</button>
+    </div>
   </section>
   </main>
 </div>
@@ -815,6 +824,44 @@ var PAGE_NAME = "done.html";
       go.file + '">Go to ' + go.label + "</a></p></div>";
     readout(null, "Locked");
   }
+
+
+  /* ---------- copy buttons ---------- */
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    var wrap = btn.closest(".cmd");
+    if (!wrap) return;
+    var block = wrap.querySelector("code");
+    if (!block) return;
+
+    function flash(msg) {
+      btn.textContent = msg;
+      btn.dataset.done = "1";
+      setTimeout(function () { btn.textContent = "Copy"; delete btn.dataset.done; }, 2000);
+    }
+    function selectIt() {
+      var r = document.createRange();
+      r.selectNodeContents(block);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+    }
+    function legacy() {
+      selectIt();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      if (ok) { window.getSelection().removeAllRanges(); flash("Copied"); }
+      else { flash("Now press Cmd+C"); }
+    }
+
+    btn.addEventListener("click", function () {
+      var text = block.innerText || block.textContent || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash("Copied"); }, legacy);
+      } else {
+        legacy();
+      }
+    });
+  });
 
   if (IDX >= 0 && !unlocked(IDX)) {
     lockOut(

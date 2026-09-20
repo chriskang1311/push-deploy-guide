@@ -695,17 +695,6 @@
       </table>
     </div>
 
-    <div class="note stop">
-      <span class="tag">The last three are the ones that matter</span>
-      <p>Those three settings are the only ones that put files into your new repository, and you want none of them. Your <code>personal-site</code> folder already has its own <code>README.md</code> and <code>.gitignore</code>; if GitHub makes its own copies now, the two sets collide and your upload in part three will be rejected.</p>
-      <p>So: <span class="ui">Add README</span> shows <strong>Off</strong>, and the two dropdowns below it still read <span class="ui">No .gitignore</span> and <span class="ui">No license</span>. They are correct when you arrive — the mistake is turning them on, not leaving them.</p>
-    </div>
-
-    <div class="note warn">
-      <span class="tag">Why private</span>
-      <p>Your <code>knowledge/</code> folder holds your profile, your FAQ, and the list of things you have decided not to discuss. Your site is built to keep that folder off the public web on purpose. A public repository would undo that and let anyone read it.</p>
-    </div>
-
     <p class="meta">Then create it</p>
 
     <p>Read those last three settings once more, then click the green <span class="ui">Create repository</span> button at the bottom right of the form. There is no "are you sure" — the repository exists the moment you click.</p>
@@ -749,12 +738,6 @@
           <tr><th>Below that</th><td>A box holding a web address ending in <code>.git</code>, and several blocks of commands beginning <code>git init</code> and <code>git remote add origin</code>.</td></tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="note good">
-      <span class="tag">That wall of commands is not an error</span>
-      <p>You do not need to run any of it, and you must not try. GitHub shows those commands because your repository is empty — which is exactly what you wanted, and exactly what the last three settings in step 2 were protecting.</p>
-      <p>Claude Code runs every one of them for you in part three. <strong>Leave this tab open</strong> and carry on.</p>
     </div>
 
     <details>
@@ -932,6 +915,44 @@ var PAGE_NAME = "part-1.html";
       go.file + '">Go to ' + go.label + "</a></p></div>";
     readout(null, "Locked");
   }
+
+
+  /* ---------- copy buttons ---------- */
+  document.querySelectorAll(".copy").forEach(function (btn) {
+    var wrap = btn.closest(".cmd");
+    if (!wrap) return;
+    var block = wrap.querySelector("code");
+    if (!block) return;
+
+    function flash(msg) {
+      btn.textContent = msg;
+      btn.dataset.done = "1";
+      setTimeout(function () { btn.textContent = "Copy"; delete btn.dataset.done; }, 2000);
+    }
+    function selectIt() {
+      var r = document.createRange();
+      r.selectNodeContents(block);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+    }
+    function legacy() {
+      selectIt();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      if (ok) { window.getSelection().removeAllRanges(); flash("Copied"); }
+      else { flash("Now press Cmd+C"); }
+    }
+
+    btn.addEventListener("click", function () {
+      var text = block.innerText || block.textContent || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { flash("Copied"); }, legacy);
+      } else {
+        legacy();
+      }
+    });
+  });
 
   if (IDX >= 0 && !unlocked(IDX)) {
     lockOut(
